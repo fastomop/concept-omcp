@@ -1,0 +1,30 @@
+concept-omcp
+Copyright concept-omcp contributors
+
+This product is licensed under the Apache License, Version 2.0 (the "License");
+you may not use this software except in compliance with the License. You may
+obtain a copy of the License in the accompanying LICENSE file or at:
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+================================================================================
+Vocabulary data — NOT covered by this licence
+================================================================================
+
+The Apache-2.0 licence above applies ONLY to the *code* in this repository.
+
+concept-omcp ships NO vocabulary data. The OMOP standardized vocabularies that a
+user loads via `concept-omcp build --omop` (downloaded from https://athena.ohdsi.org)
+are governed by their own source licences, which the user accepts at download time
+and remains responsible for complying with. These include, among others:
+
+  * OHDSI / Athena vocabulary distribution terms
+  * SNOMED CT — SNOMED International Affiliate Licence (sub-licensing and,
+    for non-member territories, fees may apply to redistribution)
+  * LOINC — Regenstrief LOINC licence (attribution; no derivative standards)
+  * WHO ICD-O-3 and other WHO classifications
+  * RxNorm, OPCS4, NAACCR, and further source vocabularies as included
+
+Built artifacts (the turbovec index and SQLite metadata) embed the literal source
+descriptions of these vocabularies and therefore MUST NOT be redistributed. See
+docs/licensing.md for the per-vocabulary posture and details.

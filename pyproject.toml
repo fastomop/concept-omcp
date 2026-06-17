@@ -1,0 +1,93 @@
+[project]
+name = "concept-omcp"
+version = "0.1.0"
+description = "Semantic, relationship-aware OMOP concept search exposed over MCP, backed by a prebuilt turbovec index + SQLite metadata."
+readme = "README.md"
+license = { text = "Apache-2.0" }
+requires-python = ">=3.10"
+keywords = ["mcp", "omop", "ohdsi", "vector-search", "turbovec", "concept", "llm"]
+authors = [{ name = "concept-omcp contributors" }]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Healthcare Industry",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: Apache Software License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Topic :: Database",
+    "Topic :: Scientific/Engineering :: Medical Science Apps.",
+    "Topic :: Software Development :: Libraries",
+]
+dependencies = [
+    "mcp[cli]>=1.6.0",
+    "pydantic>=2.0.0",
+    "pydantic-settings>=2.0.0",
+    "numpy>=1.26",
+    "platformdirs>=4.0",
+    "turbovec==0.7.0",
+    "sentence-transformers>=2.0.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/fastomop/concept-omcp"
+Repository = "https://github.com/fastomop/concept-omcp"
+Documentation = "https://fastomop.github.io/concept-omcp/"
+Issues = "https://github.com/fastomop/concept-omcp/issues"
+
+[project.scripts]
+concept-omcp = "concept_omcp.cli:main"
+
+[project.optional-dependencies]
+# Offline build pipeline (Athena CSV -> embed -> Parquet). Not imported by the served process.
+build = ["pandas>=2.0.0", "pyarrow>=15.0.0"]
+# Optional tracing of MCP tool calls. The server degrades to a no-op span without it.
+observability = ["langfuse>=3.5.2"]
+dev = ["pytest>=8.0.0", "pytest-cov>=6.0", "ruff>=0.11.0"]
+docs = ["zensical>=0.0.39", "pymdown-extensions>=10.7"]
+
+[build-system]
+requires = ["uv_build>=0.9,<0.10"]
+build-backend = "uv_build"
+
+[tool.uv.build-backend]
+module-name = "concept_omcp"
+module-root = "src"
+
+[tool.ruff]
+line-length = 120
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-m 'not integration'"
+markers = ["integration: requires built artifacts, pyarrow/turbovec, or a loaded embedding model"]
+
+[tool.coverage.run]
+source_pkgs = ["concept_omcp"]
+branch = true
+omit = ["*/__pycache__/*", "tests/*"]
+
+[tool.coverage.report]
+exclude_also = [
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+    "if TYPE_CHECKING:",
+    "pragma: no cover",
+    "@(abc\\.)?abstractmethod",
+]
+skip_covered = false
+precision = 1
+# CI floor for the FULL suite (hermetic + integration, run by the `coverage` job
+# with the `build` extra). The integration tests use a fake embedder — no model
+# download — so they exercise the build pipeline, store, and ANN cheaply. The
+# legacy maintainer script (append_vocab) and the embedder's model path are the
+# main uncovered remainders; raise this as coverage grows.
+fail_under = 65

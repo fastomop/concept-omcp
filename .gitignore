@@ -1,0 +1,71 @@
+# Prebuilt vocabulary artifacts — built locally via `concept-omcp build --omop`,
+# loaded at startup. Large binaries that embed licensed vocabulary text; NEVER
+# commit or redistribute them (see NOTICE / docs/licensing.md). The default
+# artifact location is the platform user-cache dir, not the repo.
+/artifacts/
+
+# Intermediate build data + embedding checkpoints
+*.parquet
+/build_tmp/
+.emb_ckpt/
+
+# Python — anchor build-output dirs to the repo root so they don't shadow the
+# `src/concept_omcp/build/` source package.
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+/build/
+/develop-eggs/
+/dist/
+/downloads/
+/eggs/
+/.eggs/
+/lib/
+/lib64/
+/parts/
+/sdist/
+/var/
+/wheels/
+*.egg-info/
+*.egg
+
+# Backups
+*.bak
+*.new
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Testing / coverage
+.coverage
+.coverage.*
+coverage.xml
+htmlcov/
+.pytest_cache/
+.ruff_cache/
+.tox/
+
+# Env / secrets
+.env
+.env.local
+
+# MkDocs / zensical build output
+site/
+
+# Claude Code: `.agents/`, `.claude/`, `AGENTS.md`, and `CLAUDE.md` are tracked
+# so the team shares the same agent instructions. Only per-user state stays out.
+.claude/settings.local.json
+
+# OS
+.DS_Store
+Thumbs.db

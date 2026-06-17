@@ -1,0 +1,64 @@
+name: Tests
+
+on:
+  push:
+    branches: [main, "feat/**"]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.11", "3.12", "3.13", "3.14"]
+    steps:
+      - uses: actions/checkout@v6
+      - name: Install uv
+        uses: astral-sh/setup-uv@v8.1.0
+        with:
+          version: "0.11.8"
+          python-version: ${{ matrix.python-version }}
+      - name: Sync dependencies
+        # `build` extra brings pyarrow/pandas; turbovec is a core dep. The integration
+        # tests use a fake embedder (no model download) but need both — so run the FULL
+        # suite (`-o addopts=""` clears the default `-m 'not integration'`).
+        run: uv sync --frozen --extra dev --extra build
+      - name: Run tests
+        run: uv run --frozen --no-sync pytest -o addopts="" -v
+
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: Install uv
+        uses: astral-sh/setup-uv@v8.1.0
+        with:
+          version: "0.11.8"
+          python-version: "3.13"
+      - name: ruff check
+        run: uvx ruff check src tests eval examples --output-format=github
+      - name: ruff format
+        run: uvx ruff format --check src tests eval examples
+
+  coverage:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: Install uv
+        uses: astral-sh/setup-uv@v8.1.0
+        with:
+          version: "0.11.8"
+          python-version: "3.13"
+      - name: Sync dev + build extras
+        run: uv sync --frozen --extra dev --extra build
+      - name: Run tests with coverage (full suite)
+        run: uv run --frozen --no-sync pytest -o addopts="" --cov --cov-report=term-missing --cov-report=xml
+      - name: Upload coverage report
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: coverage-xml
+          path: coverage.xml
+          if-no-files-found: ignore
