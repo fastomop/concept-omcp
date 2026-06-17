@@ -87,10 +87,7 @@ built (the default user-cache dir is otherwise empty):
 ```
 
 > **macOS:** launch via `uv` as shown — do **not** point `command` at the in-folder
-> `.venv/bin/concept-omcp`. Under Full Disk Access controls a venv binary living inside a
-> protected folder (e.g. `~/Documents`, `~/Desktop`) can't read its own `pyvenv.cfg`;
-> invoking `uv` from your `PATH` sidesteps it. (`… run --no-sync python -m concept_omcp.cli serve`
-> is an equivalent invocation.)
+> `.venv/bin/concept-omcp`. 
 
 If artifacts are missing, `serve` fails fast with a message pointing at `concept-omcp build --omop`.
 
