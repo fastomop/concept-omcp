@@ -34,6 +34,12 @@ jobs:
       - name: Build site
         run: uv run --frozen --no-sync zensical build --strict
       - uses: actions/configure-pages@v6
+        # First run auto-enables Pages (source = GitHub Actions) so the workflow is
+        # self-sufficient — no manual Settings → Pages step. Needs the `pages: write`
+        # permission above (present). Works for this internal repo because the org is
+        # on GitHub Enterprise (Pages is available for private/internal repos there).
+        with:
+          enablement: true
       - uses: actions/upload-pages-artifact@v5
         with:
           path: site
