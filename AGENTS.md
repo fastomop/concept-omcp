@@ -26,7 +26,8 @@ uv sync --frozen --extra docs                # docs site (zensical)
 | --- | --- |
 | Tests (hermetic) | `uv run --frozen --no-sync pytest` |
 | Tests (full, incl. integration) | `uv run --frozen --no-sync pytest -o addopts=""` |
-| Tests + coverage (full) | `uv run --frozen --no-sync pytest -o addopts="" --cov` |
+| Tests (CI-equivalent: full minus model download) | `uv run --frozen --no-sync pytest -o addopts="" -m "not realmodel"` |
+| Tests + coverage (CI) | `uv run --frozen --no-sync pytest -o addopts="" -m "not realmodel" --cov` |
 | Lint | `uvx ruff check src tests eval examples` |
 | Format | `uvx ruff format src tests eval examples` |
 | Pre-commit | `uvx prek run --all-files` |
@@ -36,7 +37,7 @@ uv sync --frozen --extra docs                # docs site (zensical)
 | Serve docs | `uv run --frozen --no-sync zensical serve` |
 | Build container | `docker compose -f deploy/docker-compose.yml build` |
 
-`-o addopts=""` clears the default `-m 'not integration'` filter so the build-pipeline tests run (they use a fake embedder — no model download — but need `pyarrow`/`turbovec`, i.e. the `build` extra).
+`-o addopts=""` clears the default `-m 'not integration'` filter so the build-pipeline tests run (they use a fake embedder — no model download — but need `pyarrow`/`turbovec`, i.e. the `build` extra). The one test that downloads the real MedEmbed model is marked `realmodel`: CI excludes it with `-m "not realmodel"` (it would be network-dependent and Hugging-Face-rate-limited), and it auto-skips locally when the model is neither cached nor reachable. Run it deliberately with `-o addopts="" -m realmodel`.
 
 ## Layout
 

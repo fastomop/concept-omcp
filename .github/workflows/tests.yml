@@ -22,11 +22,13 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: Sync dependencies
         # `build` extra brings pyarrow/pandas; turbovec is a core dep. The integration
-        # tests use a fake embedder (no model download) but need both — so run the FULL
-        # suite (`-o addopts=""` clears the default `-m 'not integration'`).
+        # tests use a fake embedder (no model download) but need both.
         run: uv sync --frozen --extra dev --extra build
       - name: Run tests
-        run: uv run --frozen --no-sync pytest -o addopts="" -v
+        # FULL suite minus the real-model test: `-o addopts=""` clears the default
+        # `-m 'not integration'`; `-m "not realmodel"` keeps the MedEmbed download
+        # (network-dependent, HF-rate-limited) off CI.
+        run: uv run --frozen --no-sync pytest -o addopts="" -m "not realmodel" -v
 
   lint:
     runs-on: ubuntu-latest
@@ -53,8 +55,8 @@ jobs:
           python-version: "3.13"
       - name: Sync dev + build extras
         run: uv sync --frozen --extra dev --extra build
-      - name: Run tests with coverage (full suite)
-        run: uv run --frozen --no-sync pytest -o addopts="" --cov --cov-report=term-missing --cov-report=xml
+      - name: Run tests with coverage (full suite, minus the real-model download)
+        run: uv run --frozen --no-sync pytest -o addopts="" -m "not realmodel" --cov --cov-report=term-missing --cov-report=xml
       - name: Upload coverage report
         if: always()
         uses: actions/upload-artifact@v7

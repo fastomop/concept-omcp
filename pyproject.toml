@@ -68,7 +68,10 @@ select = ["E", "F", "W", "I"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "-m 'not integration'"
-markers = ["integration: requires built artifacts, pyarrow/turbovec, or a loaded embedding model"]
+markers = [
+    "integration: requires built artifacts, pyarrow/turbovec, or a fake/real embedding model",
+    "realmodel: downloads the real MedEmbed model from Hugging Face (needs network; off CI)",
+]
 
 [tool.coverage.run]
 source_pkgs = ["concept_omcp"]
@@ -85,9 +88,10 @@ exclude_also = [
 ]
 skip_covered = false
 precision = 1
-# CI floor for the FULL suite (hermetic + integration, run by the `coverage` job
-# with the `build` extra). The integration tests use a fake embedder — no model
-# download — so they exercise the build pipeline, store, and ANN cheaply. The
-# legacy maintainer script (append_vocab) and the embedder's model path are the
-# main uncovered remainders; raise this as coverage grows.
+# CI floor for the FULL suite minus the real-model test — the `coverage` job runs
+# `-o addopts="" -m "not realmodel"` with the `build` extra. The integration tests it
+# runs use a fake embedder (no model download), so they exercise the build pipeline,
+# store, and ANN cheaply. The legacy maintainer script (append_vocab) and the embedder's
+# real-model path (only hit by the excluded `realmodel` test) are the main uncovered
+# remainders; raise this as coverage grows.
 fail_under = 65
